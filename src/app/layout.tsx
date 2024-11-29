@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Data Penduduk",
@@ -18,6 +19,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Toaster richColors />
       </body>
     </html>
   );

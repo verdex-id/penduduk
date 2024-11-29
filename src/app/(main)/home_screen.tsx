@@ -1,10 +1,14 @@
 "use client";
 
-import { Penduduk, Prisma } from "@prisma/client";
+import { Penduduk } from "@prisma/client";
 import Card from "./card";
 import { FormEvent, useState } from "react";
 import actionTambahPenduduk from "./actions";
-
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { TextGenerateEffect } from "./text";
+import { FlipWords } from "./flip_word";
+import { toast } from "sonner";
 type Params = {
   penduduk_list: Penduduk[];
 };
@@ -15,47 +19,101 @@ export default function HomeScreen({ penduduk_list }: Params) {
 
   async function handleTambahPenduduk(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    const resetForm = e.currentTarget;
     setLoading(true);
-
+    setErrors([]);
     const formData = new FormData(e.currentTarget);
 
-    var object: any = {};
+    let object: any = {};
     formData.forEach((value, key) => (object[key] = value));
 
     try {
       await actionTambahPenduduk(object);
+      toast.success("Data Penduduk Berhasil Ditambahkan", {
+        description: `NIK: ${object.nik} - Nama: ${object.nama}`,
+        position: "bottom-right",
+        duration: 3000,
+      });
+      resetForm.reset();
     } catch (err: any) {
       setErrors([...errors, err.message]);
     }
 
     setLoading(false);
   }
-
+  const kata =
+    "Input data dan melihat output data penduduk dengan mudah dan cepat";
+  const judul = ["Input", "Output", "Update", "Delete"];
   return (
-    <div className="w-full max-w-screen-2xl mx-auto px-8">
+    <div className="w-full max-w-screen-xl mx-auto px-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-screen">
-        <div className="">
-          <div className="text-white mt-48 w-full max-w-screen-sm">
-            <h1 className="font-bold text-6xl">Selamat Datang</h1>
-            <h2 className="text-xl font-medium">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos eos
-              facilis esse ea harum, architecto enim amet. Sunt, beatae ab quo
-              veniam illo laudantium quia, porro repudiandae, eos explicabo
-              inventore!
-            </h2>
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className=""
+        >
+          <div className="text-white mt-32 w-full max-w-screen-sm">
+            <div className="text-left space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="font-bold text-5xl"
+              >
+                Website <FlipWords words={judul} />
+                Data Penduduk
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="text-md font-neutral"
+              >
+                <TextGenerateEffect words={kata} />
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex items-center justify-center justify-items-center mt-14"
+            >
+              <Image
+                src={"/search.svg"}
+                alt="hero png"
+                width={500}
+                height={500}
+              />
+            </motion.div>
           </div>
-        </div>
-        <div className="">
-          <form
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className=""
+        >
+          <motion.form
             method="post"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-accent/25 backdrop-blur-xl shadow-lg p-5 rounded-xl mt-32 text-white space-y-2"
             onSubmit={handleTambahPenduduk}
           >
-            <h1 className="font-bold text-2xl text-center pb-5">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="font-bold text-2xl text-center pb-5"
+            >
               Input Data Penduduk
-            </h1>
-            <label
+            </motion.h1>
+            <motion.label
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               htmlFor="nik"
               className="block px-5 py-2 border-2 border-white/25 rounded-xl"
             >
@@ -69,8 +127,11 @@ export default function HomeScreen({ penduduk_list }: Params) {
                 max={16}
                 required
               />
-            </label>
-            <label
+            </motion.label>
+            <motion.label
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
               htmlFor="nama"
               className="block px-5 py-2 border-2 border-white/25 rounded-xl"
             >
@@ -82,8 +143,13 @@ export default function HomeScreen({ penduduk_list }: Params) {
                 placeholder="Agustus Julianti"
                 required
               />
-            </label>
-            <div className="flex items-center gap-2 w-full">
+            </motion.label>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="flex items-center gap-2 w-full"
+            >
               <label
                 htmlFor="tempat_lahir"
                 className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
@@ -109,18 +175,29 @@ export default function HomeScreen({ penduduk_list }: Params) {
                   required
                 />
               </label>
-            </div>
-            <label
+            </motion.div>
+            <motion.label
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
               htmlFor="jenis_kelamin"
               className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
             >
               <p className="font-bold">Jenis Kelamin</p>
-              <select id="jenis_kelamin" name="jenis_kelamin" required>
+              <select
+                id="jenis_kelamin"
+                name="jenis_kelamin"
+                className="w-full bg-transparent transation duration-300 ease text-white  rounded-xl p-2 "
+                required
+              >
                 <option value="laki_laki">Laki Laki</option>
                 <option value="perempuan">Perempuan</option>
               </select>
-            </label>
-            <label
+            </motion.label>
+            <motion.label
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
               htmlFor="alamat"
               className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
             >
@@ -132,8 +209,13 @@ export default function HomeScreen({ penduduk_list }: Params) {
                 placeholder="Masukkan alamat tempat tinggal saat ini"
                 required
               ></textarea>
-            </label>
-            <div className="flex items-center gap-2 w-full">
+            </motion.label>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="flex items-center gap-2 w-full"
+            >
               <label
                 htmlFor="agama"
                 className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
@@ -161,8 +243,11 @@ export default function HomeScreen({ penduduk_list }: Params) {
                   <option value="belum_menikah">Belum Menikah</option>
                 </select>
               </label>
-            </div>
-            <label
+            </motion.div>
+            <motion.label
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.9 }}
               htmlFor="pekerjaan"
               className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
             >
@@ -174,8 +259,13 @@ export default function HomeScreen({ penduduk_list }: Params) {
                 placeholder="Contoh: Pelajar, Pegawai Swasta, dll"
                 required
               />
-            </label>
-            <div className="flex items-center w-full gap-2">
+            </motion.label>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.0 }}
+              className="flex items-center w-full gap-2"
+            >
               <label
                 htmlFor="kewarganegaraan"
                 className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
@@ -198,43 +288,124 @@ export default function HomeScreen({ penduduk_list }: Params) {
                   <option value="o">O</option>
                 </select>
               </label>
-            </div>
+            </motion.div>
             {errors.length > 0 && (
-              <div className="p-5 bg-red-500 rounded-xl">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="p-5 bg-red-500 rounded-xl"
+              >
                 <h1 className="font-bold">Error!</h1>
                 <ul>
                   {errors.map((err, i) => (
-                    <li className="list-disc list-outside ml-4">{err}</li>
+                    <li key={i} className="list-disc list-outside ml-4">
+                      {err}
+                    </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             )}
-            <div className="!mt-5">
-              <button className="w-full px-5 py-2 rounded-xl bg-gradient-to-tr from-secondary to-white text-primary font-bold">
-                {loading ? "Loading..." : "Submit"}
-              </button>
-            </div>
-          </form>
-        </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.1 }}
+              className="!mt-5"
+            >
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`
+      w-full px-5 py-3 rounded-xl 
+      bg-white/10 backdrop-blur-xl 
+      border-2 border-white/20
+      text-white font-bold 
+      transition-all duration-300
+      hover:bg-white/20 
+      hover:border-white/30
+      flex items-center justify-center
+      ${loading ? "opacity-50 cursor-not-allowed" : ""}
+    `}
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Loading...
+                  </div>
+                ) : (
+                  "Submit"
+                )}
+              </motion.button>
+            </motion.div>
+          </motion.form>
+        </motion.div>
       </div>
 
       <hr className="my-5 border-4 border-white/25 rounded-xl" />
 
       {/* Table */}
-      <div className="min-h-screen mt-5">
-        <h1 className="font-bold text-3xl text-white">Daftar Data Penduduk</h1>
-        <p className="text-white w-full max-w-screen-sm">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa quas
-          neque magni quidem quam sapiente voluptates soluta recusandae! Quos
-          illum inventore, beatae repellendus pariatur rerum sequi sunt in earum
-          itaque!
-        </p>
-        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-5 bg-white rounded-xl">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+        className="min-h-screen mt-5"
+      >
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="font-bold text-3xl text-white"
+        >
+          Daftar Data Penduduk
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-white w-full max-w-screen-sm"
+        >
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-5  rounded-xl"
+        >
           {penduduk_list.map((penduduk) => (
-            <Card key={penduduk.nik} penduduk={penduduk} />
+            <motion.div
+              key={penduduk.nik}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <Card penduduk={penduduk} />
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
