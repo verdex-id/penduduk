@@ -95,69 +95,74 @@ export default function PendudukDetailScreen({ penduduk }: Params) {
   return (
     <>
       <div className="w-full min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 to-primary/20">
-        <motion.div
-          className="w-full max-w-[500px] bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 relative"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="bg-white/5 text-white p-4 flex items-center border-b border-white/20 relative">
-            <h1 className="text-xl font-bold flex-grow">
-              Kartu Tanda Penduduk
-            </h1>
-            <div className="absolute top-4 right-4 flex space-x-2">
-              <Link
-                href={`/penduduk/${penduduk.nik}/edit`}
-                className="bg-white/10 hover:bg-green-500/20 rounded-full p-1 transition-all"
-              >
-                <Icon
-                  icon="mdi:pencil"
-                  className="w-5 h-5 text-white/70 hover:text-green-400"
-                />
-              </Link>
-              <button
-                onClick={() => setShowConfirmation(true)}
-                disabled={isDeleting}
-                className={`
+        <div className="w-full max-w-[500px]">
+          <Link href={"/"} className="flex items-center gap-2 my-4 text-white ">
+            <Icon icon="uim:arrow-circle-left" className="text-2xl" />
+            <p>Kembali</p>
+          </Link>
+          <motion.div
+            className="w-full max-w-[500px] bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 relative"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="bg-white/5 text-white p-4 flex items-center border-b border-white/20 relative">
+              <h1 className="text-xl font-bold flex-grow">
+                Kartu Tanda Penduduk
+              </h1>
+              <div className="absolute top-4 right-4 flex space-x-2">
+                <Link
+                  href={`/penduduk/${penduduk.nik}/edit`}
+                  className="bg-white/10 hover:bg-green-500/20 rounded-full p-1 transition-all"
+                >
+                  <Icon
+                    icon="mdi:pencil"
+                    className="w-5 h-5 text-white/70 hover:text-green-400"
+                  />
+                </Link>
+                <button
+                  onClick={() => setShowConfirmation(true)}
+                  disabled={isDeleting}
+                  className={`
                   bg-white/10 hover:bg-red-500/20 rounded-full p-1 transition-all
                   ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}
                 `}
-              >
-                {isDeleting ? (
-                  <Icon
-                    icon="mdi:loading"
-                    className="w-5 h-5 text-white/70 animate-spin"
-                  />
-                ) : (
-                  <Icon
-                    icon="mdi:delete"
-                    className="w-5 h-5 text-white/70 hover:text-red-400"
-                  />
-                )}
-              </button>
+                >
+                  {isDeleting ? (
+                    <Icon
+                      icon="mdi:loading"
+                      className="w-5 h-5 text-white/70 animate-spin"
+                    />
+                  ) : (
+                    <Icon
+                      icon="mdi:delete"
+                      className="w-5 h-5 text-white/70 hover:text-red-400"
+                    />
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="flex justify-center py-4 border-b border-white/20">
-            <div className="w-32 h-40 bg-white/5 flex items-center justify-center border border-white/20">
-              <Icon icon="mdi:account" className="w-20 h-20 text-white/50" />
+            <div className="flex justify-center py-4 border-b border-white/20">
+              <div className="w-32 h-40 bg-white/5 flex items-center justify-center border border-white/20">
+                <Icon icon="mdi:account" className="w-20 h-20 text-white/50" />
+              </div>
             </div>
-          </div>
 
-          <div className="p-6 space-y-3">
-            {ktpDetails.map((detail, index) => (
-              <motion.div
-                key={index}
-                className="flex justify-between border-b border-white/10 pb-2"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
-              >
-                <span className="text-white/60 text-sm mr-4">
-                  {detail.label}
-                </span>
-                <span
-                  className={`
+            <div className="p-6 space-y-3">
+              {ktpDetails.map((detail, index) => (
+                <motion.div
+                  key={index}
+                  className="flex justify-between border-b border-white/10 pb-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+                >
+                  <span className="text-white/60 text-sm mr-4">
+                    {detail.label}
+                  </span>
+                  <span
+                    className={`
                     font-semibold text-sm text-white 
                     ${
                       detail.longText
@@ -165,24 +170,25 @@ export default function PendudukDetailScreen({ penduduk }: Params) {
                         : ""
                     }
                   `}
-                >
-                  {detail.value}
-                </span>
-              </motion.div>
-            ))}
+                  >
+                    {detail.value}
+                  </span>
+                </motion.div>
+              ))}
 
-            <motion.div
-              className="text-center mt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              <p className="text-sm text-white/70">
-                Berlaku Hingga: Seumur Hidup
-              </p>
-            </motion.div>
-          </div>
-        </motion.div>
+              <motion.div
+                className="text-center mt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                <p className="text-sm text-white/70">
+                  Berlaku Hingga: Seumur Hidup
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       <Confirm

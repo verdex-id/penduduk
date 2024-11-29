@@ -18,10 +18,11 @@ export default function HomeScreen({ penduduk_list }: Params) {
   const [errors, setErrors] = useState<string[]>([]);
 
   async function handleTambahPenduduk(e: FormEvent<HTMLFormElement>) {
+    setErrors([]);
     e.preventDefault();
     const resetForm = e.currentTarget;
     setLoading(true);
-    setErrors([]);
+
     const formData = new FormData(e.currentTarget);
 
     let object: any = {};
@@ -35,8 +36,10 @@ export default function HomeScreen({ penduduk_list }: Params) {
         duration: 3000,
       });
       resetForm.reset();
-    } catch (err: any) {
-      setErrors([...errors, err.message]);
+    } catch (err) {
+      if (err instanceof Error) {
+        setErrors([...errors, err.message]);
+      }
     }
 
     setLoading(false);

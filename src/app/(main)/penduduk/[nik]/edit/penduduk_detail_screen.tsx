@@ -5,6 +5,10 @@ import { useState, FormEvent } from "react";
 import { actionUpdatePenduduk } from "../actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Icon } from "@iconify/react/dist/iconify.js";
+
 type Params = {
   penduduk: Penduduk;
 };
@@ -51,14 +55,25 @@ export default function PendudukDetailScreen({ penduduk }: Params) {
   }
 
   return (
-    <div className="w-full max-w-screen-md mx-auto px-8 min-h-screen">
-      <div>
+    <div className="w-full max-w-screen-md mx-auto px-8 min-h-screen pt-32">
+      <Link
+        href={"/penduduk/" + penduduk.nik}
+        className="flex items-center gap-2 my-4 text-white "
+      >
+        <Icon icon="uim:arrow-circle-left" className="text-2xl" />
+        <p>Kembali</p>
+      </Link>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <form
           onSubmit={handleUpdatePenduduk}
-          className="bg-accent/25 backdrop-blur-xl shadow-lg p-5 rounded-xl mt-32 text-white space-y-2"
+          className="bg-accent/25 backdrop-blur-xl shadow-lg p-5 rounded-xl text-white space-y-2"
         >
           <h1 className="font-bold text-2xl text-center pb-5">
-            Input Data Penduduk
+            Ubah Data Penduduk
           </h1>
           <label
             htmlFor="nik"
@@ -256,7 +271,7 @@ export default function PendudukDetailScreen({ penduduk }: Params) {
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
