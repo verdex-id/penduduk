@@ -1,214 +1,197 @@
 "use client";
 
 import { Penduduk } from "@prisma/client";
+import { motion } from "framer-motion";
+import { Icon } from "@iconify/react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { actionDeletePenduduk } from "./actions";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Confirm from "./Confirm"; // Pastikan path ini sesuai
 
 type Params = {
   penduduk: Penduduk;
 };
 
 export default function PendudukDetailScreen({ penduduk }: Params) {
-  const [loading, setLoading] = useState<boolean>();
-  const [errors, setErrors] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const router = useRouter();
+
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    setShowConfirmation(false); // Menyembunyikan modal konfirmasi
+
+    try {
+      await actionDeletePenduduk(penduduk.nik);
+      toast.success("Data penduduk berhasil dihapus", {
+        position: "bottom-right",
+      });
+      router.push("/");
+    } catch (error) {
+      console.error("Gagal menghapus penduduk:", error);
+      toast.error("Gagal menghapus data penduduk", {
+        description:
+          error instanceof Error ? error.message : "Terjadi kesalahan",
+        position: "bottom-right",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowConfirmation(false);
+  };
+
+  const ktpDetails = [
+    { label: "NIK", value: penduduk.nik },
+    { label: "Nama", value: penduduk.nama },
+    {
+      label: "Tempat, Tanggal Lahir",
+      value: `${penduduk.tempat_lahir}, ${formatDate(penduduk.tanggal_lahir)}`,
+    },
+    {
+      label: "Jenis Kelamin",
+      value: penduduk.jenis_kelamin === "laki_laki" ? "Laki-laki" : "Perempuan",
+    },
+    {
+      label: "Alamat",
+      value: penduduk.alamat,
+      longText: true,
+    },
+    {
+      label: "Agama",
+      value: penduduk.agama.charAt(0).toUpperCase() + penduduk.agama.slice(1),
+    },
+    {
+      label: "Status Perkawinan",
+      value:
+        penduduk.status_perkawinan === "menikah" ? "Menikah" : "Belum Menikah",
+    },
+    { label: "Pekerjaan", value: penduduk.pekerjaan },
+    {
+      label: "Kewarganegaraan",
+      value:
+        penduduk.kewarganegaraan === "wni"
+          ? "Warga Negara Indonesia"
+          : "Warga Negara Asing",
+    },
+    {
+      label: "Golongan Darah",
+      value: penduduk.golongan_darah.toUpperCase(),
+    },
+  ];
 
   return (
-    <div className="w-full max-w-screen-md mx-auto px-8 min-h-screen">
-      <div className="">
-        <form
-          method="post"
-          className="bg-accent/25 backdrop-blur-xl shadow-lg p-5 rounded-xl mt-32 text-white space-y-2"
+    <>
+      <div className="w-full min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 to-primary/20">
+        <motion.div
+          className="w-full max-w-[500px] bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-2xl border border-white/20 relative"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          <h1 className="font-bold text-2xl text-center pb-5">
-            Input Data Penduduk
-          </h1>
-          <label
-            htmlFor="nik"
-            className="block px-5 py-2 border-2 border-white/25 rounded-xl"
-          >
-            <p className="font-bold">NIK</p>
-            <input
-              type="text"
-              id="nik"
-              name="nik"
-              placeholder="610201211004XXXX"
-              min={16}
-              max={16}
-              defaultValue={penduduk.nik}
-              required
-            />
-          </label>
-          <label
-            htmlFor="nama"
-            className="block px-5 py-2 border-2 border-white/25 rounded-xl"
-          >
-            <p className="font-bold">Nama</p>
-            <input
-              type="text"
-              id="nama"
-              name="nama"
-              placeholder="Agustus Julianti"
-              defaultValue={penduduk.nama}
-              required
-            />
-          </label>
-          <div className="flex items-center gap-2 w-full">
-            <label
-              htmlFor="tempat_lahir"
-              className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-            >
-              <p className="font-bold">Tempat Lahir</p>
-              <input
-                type="text"
-                id="tempat_lahir"
-                name="tempat_lahir"
-                placeholder="Boyolali"
-                defaultValue={penduduk.tempat_lahir}
-                required
-              />
-            </label>
-            <label
-              htmlFor="tanggal_lahir"
-              className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-            >
-              <p className="font-bold">Tanggal Lahir</p>
-              <input
-                type="date"
-                id="tanggal_lahir"
-                name="tanggal_lahir"
-                defaultValue={penduduk.tanggal_lahir.toISOString()}
-                required
-              />
-            </label>
-          </div>
-          <label
-            htmlFor="jenis_kelamin"
-            className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-          >
-            <p className="font-bold">Jenis Kelamin</p>
-            <select
-              id="jenis_kelamin"
-              name="jenis_kelamin"
-              defaultValue={penduduk.jenis_kelamin}
-              required
-            >
-              <option value="laki_laki">Laki Laki</option>
-              <option value="perempuan">Perempuan</option>
-            </select>
-          </label>
-          <label
-            htmlFor="alamat"
-            className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-          >
-            <p className="font-bold">Alamat</p>
-            <textarea
-              id="alamat"
-              name="alamat"
-              rows={3}
-              placeholder="Masukkan alamat tempat tinggal saat ini"
-              defaultValue={penduduk.alamat}
-              required
-            ></textarea>
-          </label>
-          <div className="flex items-center gap-2 w-full">
-            <label
-              htmlFor="agama"
-              className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-            >
-              <p className="font-bold">Agama</p>
-              <select
-                id="agama"
-                name="agama"
-                defaultValue={penduduk.agama}
-                required
+          <div className="bg-white/5 text-white p-4 flex items-center border-b border-white/20 relative">
+            <h1 className="text-xl font-bold flex-grow">
+              Kartu Tanda Penduduk
+            </h1>
+            <div className="absolute top-4 right-4 flex space-x-2">
+              <Link
+                href={`/penduduk/${penduduk.nik}/edit`}
+                className="bg-white/10 hover:bg-green-500/20 rounded-full p-1 transition-all"
               >
-                <option value="islam">Islam</option>
-                <option value="kristen">Kristen</option>
-                <option value="buddha">Buddha</option>
-                <option value="hindu">Hindu</option>
-                <option value="konghucu">Konghucu</option>
-              </select>
-            </label>
-            <label
-              htmlFor="status_perkawinan"
-              className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-            >
-              <p className="font-bold">Status Perkawinan</p>
-              <select
-                id="status_perkawinan"
-                name="status_perkawinan"
-                defaultValue={penduduk.status_perkawinan}
-                required
+                <Icon
+                  icon="mdi:pencil"
+                  className="w-5 h-5 text-white/70 hover:text-green-400"
+                />
+              </Link>
+              <button
+                onClick={() => setShowConfirmation(true)}
+                disabled={isDeleting}
+                className={`
+                  bg-white/10 hover:bg-red-500/20 rounded-full p-1 transition-all
+                  ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}
+                `}
               >
-                <option value="menikah">Menikah</option>
-                <option value="belum_menikah">Belum Menikah</option>
-              </select>
-            </label>
-          </div>
-          <label
-            htmlFor="pekerjaan"
-            className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-          >
-            <p className="font-bold">Pekerjaan</p>
-            <input
-              type="text"
-              id="pekerjaan"
-              name="pekerjaan"
-              placeholder="Contoh: Pelajar, Pegawai Swasta, dll"
-              defaultValue={penduduk.pekerjaan}
-              required
-            />
-          </label>
-          <div className="flex items-center w-full gap-2">
-            <label
-              htmlFor="kewarganegaraan"
-              className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-            >
-              <p className="font-bold">Kewarganegaraan</p>
-              <select
-                id="kewarganegaraan"
-                name="kewarganegaraan"
-                defaultValue={penduduk.kewarganegaraan}
-                required
-              >
-                <option value="wni">Warga Negara Indonesia (WNI)</option>
-                <option value="wna">Warga Negara Asing (WNA)</option>
-              </select>
-            </label>
-            <label
-              htmlFor="golongan_darah"
-              className="block px-5 py-2 border-2 border-white/25 rounded-xl w-full"
-            >
-              <p className="font-bold">Golongan Darah</p>
-              <select
-                id="golongan_darah"
-                name="golongan_darah"
-                defaultValue={penduduk.golongan_darah}
-                required
-              >
-                <option value="a">A</option>
-                <option value="b">B</option>
-                <option value="ab">AB</option>
-                <option value="o">O</option>
-              </select>
-            </label>
-          </div>
-          {errors.length > 0 && (
-            <div className="p-5 bg-red-500 rounded-xl">
-              <h1 className="font-bold">Error!</h1>
-              <ul>
-                {errors.map((err, i) => (
-                  <li className="list-disc list-outside ml-4">{err}</li>
-                ))}
-              </ul>
+                {isDeleting ? (
+                  <Icon
+                    icon="mdi:loading"
+                    className="w-5 h-5 text-white/70 animate-spin"
+                  />
+                ) : (
+                  <Icon
+                    icon="mdi:delete"
+                    className="w-5 h-5 text-white/70 hover:text-red-400"
+                  />
+                )}
+              </button>
             </div>
-          )}
-          <div className="!mt-5">
-            <button className="w-full px-5 py-2 rounded-xl bg-gradient-to-tr from-secondary to-white text-primary font-bold">
-              {loading ? "Loading..." : "Save"}
-            </button>
           </div>
-        </form>
+
+          <div className="flex justify-center py-4 border-b border-white/20">
+            <div className="w-32 h-40 bg-white/5 flex items-center justify-center border border-white/20">
+              <Icon icon="mdi:account" className="w-20 h-20 text-white/50" />
+            </div>
+          </div>
+
+          <div className="p-6 space-y-3">
+            {ktpDetails.map((detail, index) => (
+              <motion.div
+                key={index}
+                className="flex justify-between border-b border-white/10 pb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+              >
+                <span className="text-white/60 text-sm mr-4">
+                  {detail.label}
+                </span>
+                <span
+                  className={`
+                    font-semibold text-sm text-white 
+                    ${
+                      detail.longText
+                        ? "text -right break-words max-w-[200px]"
+                        : ""
+                    }
+                  `}
+                >
+                  {detail.value}
+                </span>
+              </motion.div>
+            ))}
+
+            <motion.div
+              className="text-center mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              <p className="text-sm text-white/70">
+                Berlaku Hingga: Seumur Hidup
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
-    </div>
+
+      <Confirm
+        isOpen={showConfirmation}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        nik={penduduk.nik}
+        nama={penduduk.nama}
+      />
+    </>
   );
 }
