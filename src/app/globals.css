@@ -8,4 +8,8 @@
   textarea {
     @apply w-full bg-transparent placeholder:text-white/70 outline-none focus:outline-none;
   }
+
+  * {
+    @apply scroll-smooth;
+  }
 }

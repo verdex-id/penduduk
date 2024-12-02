@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { TextGenerateEffect } from "./text";
 import { FlipWords } from "./flip_word";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 type Params = {
   penduduk_list: Penduduk[];
 };
@@ -16,6 +17,8 @@ type Params = {
 export default function HomeScreen({ penduduk_list }: Params) {
   const [loading, setLoading] = useState<boolean>();
   const [errors, setErrors] = useState<string[]>([]);
+
+  const router = useRouter();
 
   async function handleTambahPenduduk(e: FormEvent<HTMLFormElement>) {
     setErrors([]);
@@ -36,9 +39,12 @@ export default function HomeScreen({ penduduk_list }: Params) {
         duration: 3000,
       });
       resetForm.reset();
+
+      // router.push("#list");
+      document.getElementById("list")?.scrollIntoView();
     } catch (err) {
       if (err instanceof Error) {
-        setErrors([...errors, err.message]);
+        setErrors([...errors, "NIK tidak bisa digunakan, NIK sudah terdaftar"]);
       }
     }
 
@@ -128,6 +134,8 @@ export default function HomeScreen({ penduduk_list }: Params) {
                 placeholder="610201211004XXXX"
                 min={16}
                 max={16}
+                minLength={16}
+                maxLength={16}
                 required
               />
             </motion.label>
@@ -373,6 +381,7 @@ export default function HomeScreen({ penduduk_list }: Params) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.8 }}
         className="min-h-screen mt-5"
+        id="list"
       >
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -388,7 +397,7 @@ export default function HomeScreen({ penduduk_list }: Params) {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-white w-full max-w-screen-sm"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Berikut merupakan daftar data penduduk.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
