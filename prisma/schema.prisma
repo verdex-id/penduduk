@@ -13,8 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model KartuKeluarga {
+  nomor               String     @id
+  nik_kepala_keluarga String
+  anggota             Penduduk[]
+  alamat              String
+  kode_pos            Int
+  kelurahan_desa      String
+  kecamatan           String
+  kabupaten_kota      String
+  provinsi            String
+}
+
 model Penduduk {
-  nik               String   @id
+  nik               String        @id
   nama              String
   tempat_lahir      String
   tanggal_lahir     DateTime
@@ -25,4 +37,7 @@ model Penduduk {
   pekerjaan         String
   kewarganegaraan   String
   golongan_darah    String
+  nomor_kk          String
+  kk                KartuKeluarga @relation(fields: [nomor_kk], references: [nomor])
+  role              String        @default("ANGGOTA")
 }
